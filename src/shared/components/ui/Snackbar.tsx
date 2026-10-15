@@ -214,9 +214,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[2],
     borderRadius: radius.md,
   },
-  actionButtonPressed: {
-    opacity: 0.7,
-  },
   actionLabel: {
     fontWeight: '600',
   },

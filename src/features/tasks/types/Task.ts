@@ -1,8 +1,20 @@
+/** Board columns, in order. Mirrors the webapp's TASK_STATUSES. */
+export const TASK_STATUSES = ['todo', 'doing', 'done'] as const;
+export type TaskStatus = (typeof TASK_STATUSES)[number];
+
+export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
+  todo: 'To do',
+  doing: 'In progress',
+  done: 'Done',
+};
+
 export interface Task {
   id: string;
   name: string;
   description?: string;
   completed: boolean;
+  /** Board column. The API keeps this in sync with `completed`. */
+  status: TaskStatus;
   date: string; // ISO string for creation date
   dueDate?: string; // ISO string for due date
   groupId?: string; // Optional group ID for task grouping

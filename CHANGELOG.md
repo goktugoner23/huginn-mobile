@@ -5,6 +5,19 @@ All notable changes to the Huginn React Native project are documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-10-15
+
+Tasks board, matching the board added to the web app the same day.
+
+### Added
+- **Tasks board view** — one board per task group with three columns (To do / In progress / Done), backed by the new `tasks.status` column and `PATCH /api/tasks/:id/status`. Board is the default view; Groups and List are still there behind a switcher. Two deliberate differences from web, both because this is a phone: the columns scroll horizontally (three 280dp columns do not fit 390dp of screen), and cards move by tapping a column chip rather than by dragging — the web board offers the same buttons as its keyboard path, and on a phone they beat a drag across a horizontal scroll view.
+
+### Fixed
+- **The task checkbox never persisted.** It called `saveTask`, but `PUT /api/tasks/:id` only writes name, description, date, due_date and group_id — `completed` was dropped on the floor, so a ticked task came back unticked on the next load. It now goes through the status endpoint, which writes `completed` as well and keeps the board and the list in agreement.
+
+### Removed
+- `actionButtonPressed` styles in `Appbar` and `Snackbar`, dead since the pressed-state fix in 0.1.0.
+
 ## [0.1.0] - 2026-10-15
 
 Web-parity pass. The mobile drawer carried 9 entries against the web app's 19;

@@ -8,7 +8,7 @@
  */
 
 import { api } from '@shared/services/api/httpClient';
-import { Task, TaskGroup } from '@features/tasks/types/Task';
+import { Task, TaskGroup, TaskStatus } from '@features/tasks/types/Task';
 import { logger } from '@shared/utils/logger';
 
 // ── Backend DTOs (snake_case, numeric ids) ──────────────────────────
@@ -18,6 +18,7 @@ interface BackendTask {
   name: string;
   description: string | null;
   completed: boolean;
+  status?: TaskStatus;
   date: string;
   due_date: string | null;
   group_id: number | null;
@@ -55,6 +56,14 @@ const fromBackendTask = (row: BackendTask): Task => ({
   name: row.name ?? '',
   description: row.description ?? undefined,
   completed: !!row.completed,
+  // Rows written before the status column existed have none; fall back to the
+  // boolean so a task never lands outside every board column.
+  status:
+    row.status === 'todo' || row.status === 'doing' || row.status === 'done'
+      ? row.status
+      : row.completed
+        ? 'done'
+        : 'todo',
   date: row.date ?? new Date().toISOString(),
   dueDate: row.due_date ?? undefined,
   groupId: row.group_id != null ? String(row.group_id) : undefined,
@@ -116,6 +125,21 @@ export const saveTask = async (task: Task): Promise<Task> => {
     return row ? fromBackendTask(row) : task;
   } catch (error) {
     logger.error('Error saving task:', error);
+    throw error;
+  }
+};
+
+/**
+ * Move a task to a board column. The API writes `completed` to match, so the
+ * checklist views stay in step with the board.
+ */
+export const setTaskStatus = async (taskId: string, status: TaskStatus): Promise<Task | null> => {
+  try {
+    if (!isBackendId(taskId)) return null;
+    const row = await api.patch<BackendTask>(`/api/tasks/${Number(taskId)}/status`, { status });
+    return row ? fromBackendTask(row) : null;
+  } catch (error) {
+    logger.error('Error setting task status:', error);
     throw error;
   }
 };

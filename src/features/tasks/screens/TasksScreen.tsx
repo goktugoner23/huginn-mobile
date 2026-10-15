@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { View, StyleSheet, RefreshControl, Text, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, RefreshControl, ScrollView, Text, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Appbar, AppbarAction } from '@shared/components/ui';
 import { AddFab } from '@shared/components';
-import { Task, TaskGroup } from '@features/tasks/types/Task';
-import { getTasks, saveTask, deleteTask as deleteTaskApi, getTaskGroups, saveTaskGroup, deleteTaskGroup as deleteGroupApi } from '@features/tasks/services/tasks';
+import { Task, TaskGroup, TaskStatus } from '@features/tasks/types/Task';
+import { getTasks, saveTask, deleteTask as deleteTaskApi, getTaskGroups, saveTaskGroup, deleteTaskGroup as deleteGroupApi, setTaskStatus } from '@features/tasks/services/tasks';
+import TaskBoard from '@features/tasks/components/TaskBoard';
 import TaskCard from '@features/tasks/components/TaskCard';
 import TaskGroupHeader from '@features/tasks/components/TaskGroupHeader';
 import EmptyTasksState from '@features/tasks/components/EmptyTasksState';
@@ -22,7 +23,9 @@ const TasksScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [isGroupedView, setIsGroupedView] = useState(true);
+  // Board is the default, matching the webapp's tasks page.
+  type ViewMode = 'board' | 'grouped' | 'list';
+  const [viewMode, setViewMode] = useState<ViewMode>('board');
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   type DialogType = 'none' | 'addTask' | 'addGroup' | 'editTask' | 'deleteTask' | 'deleteGroup';
   const [activeDialog, setActiveDialog] = useState<DialogType>('none');
@@ -55,12 +58,19 @@ const TasksScreen: React.FC = () => {
     return map;
   }, [tasks]);
 
-  // Task actions
+  // Task actions.
+  //
+  // The checkbox goes through the status endpoint, not saveTask: `PUT
+  // /api/tasks/:id` only writes name/description/date/due_date/group_id, so
+  // ticking a task used to look right on screen and never persist. The status
+  // route writes `completed` too, which also keeps the board in step.
   const handleToggleTaskComplete = useCallback(async (task: Task) => {
-    const updated: Task = { ...task, completed: !task.completed };
+    const next: TaskStatus = task.completed ? 'todo' : 'done';
+    const updated: Task = { ...task, completed: !task.completed, status: next };
     setTasks((prev) => prev.map((t) => (t.id === task.id ? updated : t)));
     try {
-      await saveTask(updated);
+      const saved = await setTaskStatus(task.id, next);
+      if (saved) setTasks((prev) => prev.map((t) => (t.id === task.id ? saved : t)));
     } catch {
       setTasks((prev) => prev.map((t) => (t.id === task.id ? task : t)));
     }
@@ -69,6 +79,20 @@ const TasksScreen: React.FC = () => {
   const handleEditTask = useCallback((task: Task) => {
     setSelectedTask(task);
     setActiveDialog('editTask');
+  }, []);
+
+  /** Board column move. Optimistic, rolled back if the write fails. */
+  const handleMoveTask = useCallback(async (task: Task, status: TaskStatus) => {
+    if (task.status === status) return;
+    const moved: Task = { ...task, status, completed: status === 'done' };
+    setTasks((prev) => prev.map((t) => (t.id === task.id ? moved : t)));
+    try {
+      const saved = await setTaskStatus(task.id, status);
+      if (saved) setTasks((prev) => prev.map((t) => (t.id === task.id ? saved : t)));
+    } catch {
+      setTasks((prev) => prev.map((t) => (t.id === task.id ? task : t)));
+      Alert.alert('Error', `Could not move "${task.name}".`);
+    }
   }, []);
 
   const handleUpdateTask = useCallback(
@@ -110,6 +134,7 @@ const TasksScreen: React.FC = () => {
         name: taskData.name,
         description: taskData.description,
         completed: false,
+        status: 'todo',
         date: new Date().toISOString(),
         dueDate: taskData.dueDate?.toISOString(),
         groupId: taskData.groupId,
@@ -262,6 +287,39 @@ const TasksScreen: React.FC = () => {
     );
   };
 
+  /** One board per group, then a "No group" board when anything is ungrouped. */
+  const renderBoards = () => {
+    const boards = taskGroups
+      .map((group) => ({ group, items: groupedTasks[group.id] ?? [] }))
+      .filter((b) => b.items.length > 0);
+    const ungrouped = groupedTasks.ungrouped ?? [];
+
+    return (
+      <ScrollView
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        contentContainerStyle={styles.boardScroll}
+      >
+        {boards.map(({ group, items }) => (
+          <TaskBoard
+            key={group.id}
+            group={group}
+            tasks={items}
+            onMove={handleMoveTask}
+            onEdit={handleEditTask}
+          />
+        ))}
+        {ungrouped.length > 0 ? (
+          <TaskBoard
+            group={null}
+            tasks={ungrouped}
+            onMove={handleMoveTask}
+            onEdit={handleEditTask}
+          />
+        ) : null}
+      </ScrollView>
+    );
+  };
+
   const renderSimpleTasks = () => (
     <FlashList
       data={sortedTasks}
@@ -287,10 +345,36 @@ const TasksScreen: React.FC = () => {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {tasks.length === 0 ? (
         <EmptyTasksState onCreateTask={() => setActiveDialog('addTask')} />
-      ) : isGroupedView ? (
-        renderGroupedTasks()
       ) : (
-        renderSimpleTasks()
+        <>
+          <View style={styles.viewSwitch}>
+            {(['board', 'grouped', 'list'] as ViewMode[]).map((mode) => (
+              <TouchableOpacity
+                key={mode}
+                onPress={() => setViewMode(mode)}
+                style={[
+                  styles.viewChip,
+                  { borderColor: colors.border },
+                  viewMode === mode && { backgroundColor: colors.primary, borderColor: colors.primary },
+                ]}
+              >
+                <Text
+                  style={[
+                    textStyles.caption,
+                    { color: viewMode === mode ? colors.primaryForeground : colors.foregroundMuted },
+                  ]}
+                >
+                  {mode === 'board' ? 'Board' : mode === 'grouped' ? 'Groups' : 'List'}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          {viewMode === 'board'
+            ? renderBoards()
+            : viewMode === 'grouped'
+              ? renderGroupedTasks()
+              : renderSimpleTasks()}
+        </>
       )}
 
       <AddFab style={styles.fab} onPress={() => setActiveDialog('addTask')} />
@@ -349,6 +433,23 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingVertical: spacing[2],
+  },
+  viewSwitch: {
+    flexDirection: 'row',
+    gap: spacing[2],
+    paddingHorizontal: spacing[4],
+    paddingTop: spacing[2],
+    paddingBottom: spacing[3],
+  },
+  viewChip: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1],
+  },
+  boardScroll: {
+    paddingTop: spacing[1],
+    paddingBottom: spacing[8],
   },
   ungroupedHeader: {
     paddingHorizontal: spacing[4],

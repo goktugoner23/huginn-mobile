@@ -165,9 +165,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionButtonPressed: {
-    opacity: 0.7,
-  },
   actionButtonDisabled: {
     opacity: 0.5,
   },
