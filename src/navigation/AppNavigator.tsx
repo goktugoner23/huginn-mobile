@@ -23,6 +23,10 @@ import RepositoriesScreen from '@features/repositories/screens/RepositoriesScree
 import { InvestmentsTab } from '@features/transactions/screens/InvestmentsTab';
 import InsightsScreen from '@features/insights/screens/InsightsScreen';
 import HealthScreen from '@features/health/screens/HealthScreen';
+import {
+  XikipediaScreen,
+  XikipediaCsScreen,
+} from '@features/xikipedia/screens/XikipediaScreen';
 
 export type DrawerParamList = {
   Dashboard: undefined;
@@ -41,6 +45,8 @@ export type DrawerParamList = {
   Investments: undefined;
   Insights: undefined;
   Health: undefined;
+  Xikipedia: undefined;
+  XikipediaCs: undefined;
 };
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -65,6 +71,8 @@ const SCREENS: Array<{
   { name: 'Investments', component: InvestmentsTab },
   { name: 'Insights', component: InsightsScreen },
   { name: 'Health', component: HealthScreen },
+  { name: 'Xikipedia', component: XikipediaScreen },
+  { name: 'XikipediaCs', component: XikipediaCsScreen },
 ];
 
 export function AppNavigator() {

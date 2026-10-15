@@ -12,7 +12,9 @@ import {
   HeartPulse,
   Home,
   Server,
+  Sigma,
   StickyNote,
+  Telescope,
   TrendingUp,
   Users,
   Wallet,
@@ -33,7 +35,7 @@ export interface NavigationGroup {
 
 // Mirrors huginn-webapp's src/shared/config/dashboard-navigation.ts — same
 // groups, same order, same titles, blurbs and icons. Manifest is deliberately
-// left out of the mobile app. Xikipedia follows once its screens exist.
+// left out of the mobile app.
 export const navigationGroups: NavigationGroup[] = [
   {
     id: 'workspace',
@@ -146,6 +148,18 @@ export const navigationGroups: NavigationGroup[] = [
         route: 'Muninn',
         icon: Bird,
         blurb: 'AI agent, memory, and conversation archive',
+      },
+      {
+        title: 'Xikipedia',
+        route: 'Xikipedia',
+        icon: Telescope,
+        blurb: 'Wikipedia as a discovery feed',
+      },
+      {
+        title: 'Xikipedia CS',
+        route: 'XikipediaCs',
+        icon: Sigma,
+        blurb: 'Computer science & mathematics feed',
       },
     ],
   },

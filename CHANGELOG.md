@@ -20,6 +20,7 @@ Workout `Exercise` tab, the richer Transactions tabs) stay as they are.
 - **Insights** (Workspace) — generated monthly reports over the transaction ledger, reading `/api/insights`.
 - **Health** (Workspace) — Apple Health metrics from `vitals_samples`: latest value per metric and a 30-day series for the selected one. Reads the new `/api/vitals/{persons,summary,series}` routes added to huginn-external for this, since the web page queries the table directly.
 - **Workout → History, Notes and Tyr tabs** — the three tabs the web workspace had and mobile did not. Tyr keeps the web's Correlation / Summary / Coach-notes sections, the 8/12/26-week windows and the same trend arithmetic.
+- **Xikipedia and Xikipedia CS** (Intelligence) — the discovery feed, as a full-screen vertical pager. `services/feed-engine.ts` is the web file copied verbatim, so scoring, the 40/42/18 pick split and the seen-penalty are identical; swiping past a post, tapping the title, tapping the image and the heart map to the same four engagement scores, and each corpus keeps its own learned profile. The browser downloads the 36MB brotli corpus and inflates it natively (~120MB of JSON); RN's fetch cannot decode `Content-Encoding: br` and a phone should not hold that anyway, so huginn-external now publishes a gzipped sample per corpus (12,000 pages, 5.7MB and 1.7MB) with a title index covering every page those pages link to — the pool of pages shrinks, how any page scores does not.
 
 ### Changed
 - **Drawer now mirrors the web nav exactly** — same three groups, same order, same titles, blurbs and icons as `dashboard-navigation.ts`. Workout and WT Registry move from Systems to Workspace.
@@ -32,8 +33,8 @@ Workout `Exercise` tab, the richer Transactions tabs) stay as they are.
 - **Drawer screens showed their route name as the header title** — "ServerScreen" instead of "Huginn Server", "WTRegistry" instead of "WT Registry".
 
 ### Notes
-- Web's `/xikipedia` downloads a brotli corpus and relies on the browser decoding `Content-Encoding: br`; its own source says so explicitly. React Native's fetch does not, so it needs a decompressed or gzip response from the backend. Xikipedia and Xikipedia CS are the remaining gap.
 - Coach notes and workout notes render as plain text. Mobile has no markdown renderer anywhere, so this matches the rest of the app rather than adding a dependency for one tab.
+- Manifest stays web-only, as agreed.
 
 ## [Unreleased] - 2026-04-17
 
