@@ -92,7 +92,7 @@ export function SegmentedControl<T extends string | number>({
           <Pressable
             key={String(option.value)}
             onPress={() => handlePress(option.value)}
-            style={({ pressed }) => [segmentStyle, pressed && !isSelected && { opacity: 0.7 }]}
+            style={segmentStyle}
           >
             {option.icon}
             <Text style={textStyle}>{option.label}</Text>

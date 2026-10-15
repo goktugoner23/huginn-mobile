@@ -170,10 +170,7 @@ export function Snackbar({
         {action && (
           <Pressable
             onPress={handleActionPress}
-            style={({ pressed }) => [
-              styles.actionButton,
-              pressed && styles.actionButtonPressed,
-            ]}
+            style={styles.actionButton}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <Text

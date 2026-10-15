@@ -76,7 +76,7 @@ export function Tabs({
       <Pressable
         key={tab.key}
         onPress={() => onChange(tab.key)}
-        style={({ pressed }) => [getTabStyle(), fullWidth && { flex: 1 }, pressed && { opacity: 0.7 }]}
+        style={[getTabStyle(), fullWidth && { flex: 1 }]}
       >
         {tab.icon}
         <Text style={[styles.tabLabel, { color: getTextColor() }, isActive && styles.activeTabLabel]}>{tab.label}</Text>

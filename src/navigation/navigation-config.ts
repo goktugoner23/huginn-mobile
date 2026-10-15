@@ -1,12 +1,19 @@
 import type { LucideIcon } from 'lucide-react-native';
 import {
+  AlertTriangle,
   Bird,
+  BookOpen,
   CalendarDays,
   CheckSquare,
   Clock,
   Dumbbell,
+  FileCode2,
+  GitFork,
+  HeartPulse,
   Home,
+  Server,
   StickyNote,
+  TrendingUp,
   Users,
   Wallet,
 } from 'lucide-react-native';
@@ -24,6 +31,9 @@ export interface NavigationGroup {
   items: NavigationItem[];
 }
 
+// Mirrors huginn-webapp's src/shared/config/dashboard-navigation.ts — same
+// groups, same order, same titles, blurbs and icons. Manifest is deliberately
+// left out of the mobile app. Xikipedia follows once its screens exist.
 export const navigationGroups: NavigationGroup[] = [
   {
     id: 'workspace',
@@ -41,11 +51,29 @@ export const navigationGroups: NavigationGroup[] = [
         icon: Wallet,
         blurb: 'Money flow, budgets, and reports',
       },
-{
+      {
+        title: 'Insights',
+        route: 'Insights',
+        icon: BookOpen,
+        blurb: 'Monthly magazine — where the money went',
+      },
+      {
+        title: 'Investments',
+        route: 'Investments',
+        icon: TrendingUp,
+        blurb: 'Trades, thesis, and portfolio workspace',
+      },
+      {
         title: 'Tasks',
         route: 'Tasks',
         icon: CheckSquare,
         blurb: 'Action queue with focus views',
+      },
+      {
+        title: 'Artifacts',
+        route: 'Artifacts',
+        icon: FileCode2,
+        blurb: 'HTML artifacts from the vault',
       },
       {
         title: 'Notes',
@@ -59,12 +87,6 @@ export const navigationGroups: NavigationGroup[] = [
         icon: CalendarDays,
         blurb: 'Events, reminders, and planning rhythm',
       },
-    ],
-  },
-  {
-    id: 'systems',
-    title: 'Systems',
-    items: [
       {
         title: 'Workout',
         route: 'Workout',
@@ -72,16 +94,46 @@ export const navigationGroups: NavigationGroup[] = [
         blurb: 'Programs, sessions, and progression',
       },
       {
+        title: 'Health',
+        route: 'Health',
+        icon: HeartPulse,
+        blurb: 'Apple Watch and iPhone health data',
+      },
+      {
         title: 'WT Registry',
         route: 'WTRegistry',
         icon: Users,
         blurb: 'Students, registrations, and seminars',
       },
+    ],
+  },
+  {
+    id: 'systems',
+    title: 'Systems',
+    items: [
       {
         title: 'History',
         route: 'History',
         icon: Clock,
         blurb: 'Unified timeline across the system',
+      },
+      {
+        title: 'Repositories',
+        route: 'Repositories',
+        icon: GitFork,
+        blurb: 'Forge and GitHub repository overview',
+      },
+      {
+        title: 'Huginn Server',
+        route: 'ServerScreen',
+        icon: Server,
+        blurb: 'Docker containers, resources, and server health',
+      },
+      {
+        title: 'Diagnostics',
+        route: 'Diagnostics',
+        icon: AlertTriangle,
+        blurb: 'Centralised error log across all services',
       },
     ],
   },

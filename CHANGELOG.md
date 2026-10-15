@@ -5,6 +5,36 @@ All notable changes to the Huginn React Native project are documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2026-10-15
+
+Web-parity pass. The mobile drawer carried 9 entries against the web app's 19;
+this closes part of that gap. Nothing was removed — mobile-only screens (the
+Workout `Exercise` tab, the richer Transactions tabs) stay as they are.
+
+### Added
+- **Huginn Server** (Systems) — overview cards (CPU, memory, containers, docker disk, server disk), container list with live CPU/memory stats, and a log viewer. Same four endpoints and interfaces as the web module, so both clients read one contract.
+- **Artifacts** (Workspace) — searchable, folder-filtered artifact list and a full-screen viewer. The web page renders artifacts in an iframe; mobile uses a `WebView` against the same signed view URL, since the artifact is an HTML document either way.
+- **Diagnostics** (Systems) — error log with level filter, per-service counts, expandable stack traces and context, plus the clear action (confirmed first, since it deletes `error_log` rows with no undo).
+- **Repositories** (Systems) — Forge/GitHub toggle, repo list, and a detail view with commits, README and language breakdown. Forge and GitHub differ only in field names on the wire (`stars_count` vs `stargazers_count`), so both normalise into one row model.
+- **Investments** (Workspace) — promoted the existing `InvestmentsTab` to its own drawer entry to match the web nav. The Transactions tab still reaches the same screen.
+- **Insights** (Workspace) — generated monthly reports over the transaction ledger, reading `/api/insights`.
+- **Health** (Workspace) — Apple Health metrics from `vitals_samples`: latest value per metric and a 30-day series for the selected one. Reads the new `/api/vitals/{persons,summary,series}` routes added to huginn-external for this, since the web page queries the table directly.
+- **Workout → History, Notes and Tyr tabs** — the three tabs the web workspace had and mobile did not. Tyr keeps the web's Correlation / Summary / Coach-notes sections, the 8/12/26-week windows and the same trend arithmetic.
+
+### Changed
+- **Drawer now mirrors the web nav exactly** — same three groups, same order, same titles, blurbs and icons as `dashboard-navigation.ts`. Workout and WT Registry move from Systems to Workspace.
+- **Workout tabs moved to a scrollable top bar** — seven tabs do not fit a bottom bar, and the web workspace uses a horizontal row anyway.
+- **Dashboard cards take their icon from the nav item** — one list instead of a second `ICON_MAP` that silently fell back to a clock for every new entry.
+
+### Fixed
+- **Styles were dropped from every component that passed `style` as a function.** `nativewind/babel` wraps React Native components and never invokes a `({ pressed }) => [...]` style prop, so the result was discarded. Dashboard cards rendered with no width, padding, border or background: each row sized its two cards to their own text, columns landed at a different x on every row, and long blurbs ran off the screen. Converted all 31 occurrences across 11 files (`Card`, `List`, `Tabs`, `Chip`, `FAB`, `IconButton`, `SegmentedControl`, `Appbar`, `Snackbar`, `ChatInput`, `RichTextEditor`) to plain arrays, with `android_ripple` where press feedback mattered.
+- **Crash on Android 14+ when location sharing started.** `react-native-background-actions` called `startForeground()` with type `none`, which targetSdk 34 prohibits, and the app died with `InvalidForegroundServiceTypeException`. The manifest already declared `foregroundServiceType="location"`; the runtime call now passes it too.
+- **Drawer screens showed their route name as the header title** — "ServerScreen" instead of "Huginn Server", "WTRegistry" instead of "WT Registry".
+
+### Notes
+- Web's `/xikipedia` downloads a brotli corpus and relies on the browser decoding `Content-Encoding: br`; its own source says so explicitly. React Native's fetch does not, so it needs a decompressed or gzip response from the backend. Xikipedia and Xikipedia CS are the remaining gap.
+- Coach notes and workout notes render as plain text. Mobile has no markdown renderer anywhere, so this matches the rest of the app rather than adding a dependency for one tab.
+
 ## [Unreleased] - 2026-04-17
 
 ### Changed

@@ -423,7 +423,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
               ].map((item) => (
                 <Pressable
                   key={item.label}
-                  style={({ pressed }) => [styles.attachGridItem, pressed && { opacity: 0.6 }]}
+                  style={styles.attachGridItem}
                   onPress={() => handleAttachOption(item.action)}
                 >
                   <View style={[styles.attachGridIcon, { backgroundColor: item.bg }]}>

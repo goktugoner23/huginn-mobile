@@ -57,7 +57,8 @@ export function Card({ children, variant = 'elevated', padding = 'md', style, on
       <Pressable
         onPress={onPress}
         onLongPress={onLongPress}
-        style={({ pressed }) => [cardStyle, style, pressed && { opacity: 0.95, backgroundColor: colors.surfaceHover }]}
+        android_ripple={{ color: colors.surfaceHover }}
+        style={[cardStyle, style]}
       >
         {children}
       </Pressable>

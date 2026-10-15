@@ -61,12 +61,8 @@ export function ListItem({
       <Pressable
         onPress={onPress}
         disabled={disabled}
-        style={({ pressed }) => [
-          styles.container,
-          pressed && { backgroundColor: colors.muted },
-          disabled && { opacity: 0.5 },
-          style,
-        ]}
+        android_ripple={{ color: colors.muted }}
+        style={[styles.container, disabled && { opacity: 0.5 }, style]}
       >
         {content}
       </Pressable>

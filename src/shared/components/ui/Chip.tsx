@@ -94,7 +94,7 @@ export function Chip({
 
   if (onPress) {
     return (
-      <Pressable onPress={onPress} style={({ pressed }) => [containerStyle, pressed && { opacity: 0.7 }, style]}>
+      <Pressable onPress={onPress} style={[containerStyle, style]}>
         {content}
       </Pressable>
     );

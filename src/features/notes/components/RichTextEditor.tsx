@@ -387,16 +387,16 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorProps>(
         >
           {/* Text Formatting */}
           <View style={styles.toolbarSection}>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleBold}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleBold}>
               <Text style={[styles.toolbarLabel, { color: colors.foreground, fontWeight: '800' }]}>B</Text>
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleItalic}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleItalic}>
               <Text style={[styles.toolbarLabel, { color: colors.foreground, fontStyle: 'italic' }]}>I</Text>
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleUnderline}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleUnderline}>
               <Text style={[styles.toolbarLabel, { color: colors.foreground, textDecorationLine: 'underline' }]}>U</Text>
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleStrikethrough}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleStrikethrough}>
               <Text style={[styles.toolbarLabel, { color: colors.foreground, textDecorationLine: 'line-through' }]}>S</Text>
             </Pressable>
           </View>
@@ -405,13 +405,13 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorProps>(
 
           {/* Headings */}
           <View style={styles.toolbarSection}>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleHeading1}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleHeading1}>
               <Text style={[styles.toolbarLabel, { color: colors.foreground, fontWeight: '800', fontSize: 16 }]}>H1</Text>
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleHeading2}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleHeading2}>
               <Text style={[styles.toolbarLabel, { color: colors.foreground, fontWeight: '700', fontSize: 14 }]}>H2</Text>
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleHeading3}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleHeading3}>
               <Text style={[styles.toolbarLabel, { color: colors.foreground, fontWeight: '600', fontSize: 13 }]}>H3</Text>
             </Pressable>
           </View>
@@ -420,13 +420,13 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorProps>(
 
           {/* Lists */}
           <View style={styles.toolbarSection}>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleBullets}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleBullets}>
               <Ionicons name="list-outline" size={22} color={colors.foreground} />
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleNumbers}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleNumbers}>
               <Ionicons name="list" size={22} color={colors.foreground} />
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={onPressChecklist}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={onPressChecklist}>
               <Ionicons name="checkbox-outline" size={22} color={colors.foreground} />
             </Pressable>
           </View>
@@ -435,13 +435,13 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorProps>(
 
           {/* Alignment */}
           <View style={styles.toolbarSection}>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleAlignLeft}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleAlignLeft}>
               <Ionicons name="reorder-three-outline" size={22} color={colors.foreground} />
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleAlignCenter}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleAlignCenter}>
               <Ionicons name="reorder-four-outline" size={22} color={colors.foreground} />
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleAlignRight}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleAlignRight}>
               <Ionicons name="reorder-two-outline" size={22} color={colors.foreground} />
             </Pressable>
           </View>
@@ -450,16 +450,16 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorProps>(
 
           {/* Special Formatting */}
           <View style={styles.toolbarSection}>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleBlockquote}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleBlockquote}>
               <Ionicons name="chatbox-outline" size={22} color={colors.foreground} />
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleCode}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleCode}>
               <Ionicons name="code-slash-outline" size={22} color={colors.foreground} />
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={onPressLink}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={onPressLink}>
               <Ionicons name="link-outline" size={22} color={colors.foreground} />
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={onPressTable}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={onPressTable}>
               <Ionicons name="grid-outline" size={22} color={colors.foreground} />
             </Pressable>
           </View>
@@ -468,17 +468,17 @@ const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorProps>(
 
           {/* History */}
           <View style={styles.toolbarSection}>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleUndo}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleUndo}>
               <Ionicons name="arrow-undo-outline" size={22} color={colors.foreground} />
             </Pressable>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={handleRedo}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={handleRedo}>
               <Ionicons name="arrow-redo-outline" size={22} color={colors.foreground} />
             </Pressable>
           </View>
 
           {/* Advanced Toolbar Toggle */}
           <View style={styles.toolbarSection}>
-            <Pressable style={({ pressed }) => [styles.toolbarBtn, pressed && { backgroundColor: colors.border }]} onPress={() => setShowAdvancedToolbar(true)}>
+            <Pressable style={styles.toolbarBtn} android_ripple={{ color: colors.border }} onPress={() => setShowAdvancedToolbar(true)}>
               <Ionicons name="ellipsis-horizontal" size={22} color={colors.foreground} />
             </Pressable>
           </View>

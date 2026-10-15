@@ -19,11 +19,7 @@ export function AppbarAction({ icon, onPress, disabled, color }: AppbarActionPro
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      style={({ pressed }) => [
-        styles.actionButton,
-        pressed && styles.actionButtonPressed,
-        disabled && styles.actionButtonDisabled,
-      ]}
+      style={[styles.actionButton, disabled && styles.actionButtonDisabled]}
     >
       <Ionicons name={icon} size={24} color={disabled ? colors.foregroundSubtle : iconColor} />
     </Pressable>
@@ -93,10 +89,7 @@ export function Appbar({
           {leadingIcon && onLeadingPress && (
             <Pressable
               onPress={onLeadingPress}
-              style={({ pressed }) => [
-                styles.actionButton,
-                pressed && styles.actionButtonPressed,
-              ]}
+              style={styles.actionButton}
             >
               <Ionicons name={leadingIcon} size={24} color={colors.foreground} />
             </Pressable>

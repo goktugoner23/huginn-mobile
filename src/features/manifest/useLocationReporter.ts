@@ -95,6 +95,11 @@ async function startAndroid(): Promise<void> {
     taskTitle: 'Sharing location',
     taskDesc: 'Your location is shared privately with your partner.',
     taskIcon: { name: 'ic_launcher', type: 'mipmap' },
+    // Android 14 (targetSdk 34) rejects startForeground() with type "none" and
+    // the app dies with InvalidForegroundServiceTypeException. The manifest
+    // already declares foregroundServiceType="location"; the runtime call has
+    // to repeat it, so the type must be passed here too.
+    foregroundServiceType: ['location'],
     // no linkingURI/color needed
   });
 }

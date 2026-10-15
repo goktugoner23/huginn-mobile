@@ -80,7 +80,7 @@ export function IconButton({
     <Pressable
       {...props}
       disabled={isDisabled}
-      style={({ pressed }) => [buttonStyle, pressed && { opacity: 0.85 }, style]}
+      style={[buttonStyle, style]}
     >
       {loading ? (
         <ActivityIndicator size="small" color={buttonColors.icon} />

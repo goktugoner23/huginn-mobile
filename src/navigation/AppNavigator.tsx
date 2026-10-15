@@ -4,6 +4,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '@shared/theme';
 import { DrawerContent } from './DrawerContent';
+import { findNavigationItem } from './navigation-config';
 import { DashboardScreen } from '@features/dashboard';
 import TasksScreen from '@features/tasks/screens/TasksScreen';
 import TransactionTabs from '@features/transactions/screens/TransactionTabs';
@@ -13,6 +14,15 @@ import WorkoutStack from '@features/workout/screens/WorkoutStack';
 import { WTRegistryScreen } from '@features/wtregistry/screens/WTRegistryScreen';
 import { HistoryScreen } from '@features/history/screens/HistoryScreen';
 import MuninnScreen from '@features/muninn/screens/MuninnScreen';
+import ServerScreen from '@features/server/screens/ServerScreen';
+import ArtifactsScreen from '@features/artifacts/screens/ArtifactsScreen';
+import DiagnosticsScreen from '@features/diagnostics/screens/DiagnosticsScreen';
+import RepositoriesScreen from '@features/repositories/screens/RepositoriesScreen';
+// Web exposes Investments as its own nav entry; mobile keeps the Transactions
+// tab too, so both routes reach the same screen.
+import { InvestmentsTab } from '@features/transactions/screens/InvestmentsTab';
+import InsightsScreen from '@features/insights/screens/InsightsScreen';
+import HealthScreen from '@features/health/screens/HealthScreen';
 
 export type DrawerParamList = {
   Dashboard: undefined;
@@ -24,6 +34,13 @@ export type DrawerParamList = {
   WTRegistry: undefined;
   History: undefined;
   Muninn: undefined;
+  ServerScreen: undefined;
+  Artifacts: undefined;
+  Diagnostics: undefined;
+  Repositories: undefined;
+  Investments: undefined;
+  Insights: undefined;
+  Health: undefined;
 };
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -41,6 +58,13 @@ const SCREENS: Array<{
   { name: 'WTRegistry', component: WTRegistryScreen },
   { name: 'History', component: HistoryScreen },
   { name: 'Muninn', component: MuninnScreen },
+  { name: 'ServerScreen', component: ServerScreen },
+  { name: 'Artifacts', component: ArtifactsScreen },
+  { name: 'Diagnostics', component: DiagnosticsScreen },
+  { name: 'Repositories', component: RepositoriesScreen },
+  { name: 'Investments', component: InvestmentsTab },
+  { name: 'Insights', component: InsightsScreen },
+  { name: 'Health', component: HealthScreen },
 ];
 
 export function AppNavigator() {
@@ -84,7 +108,14 @@ export function AppNavigator() {
         }}
       >
         {SCREENS.map(({ name, component }) => (
-          <Drawer.Screen key={name} name={name} component={component} />
+          <Drawer.Screen
+            key={name}
+            name={name}
+            component={component}
+            // Without this the header shows the route name, so "Huginn Server"
+            // read "ServerScreen" and "WT Registry" read "WTRegistry".
+            options={{ title: findNavigationItem(name)?.item.title ?? name }}
+          />
         ))}
       </Drawer.Navigator>
     </NavigationContainer>

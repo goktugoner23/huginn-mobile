@@ -101,12 +101,7 @@ export function FAB({
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      style={({ pressed }) => [
-        fabStyle,
-        getPosition(),
-        pressed && { opacity: 0.8, transform: [{ scale: 0.95 }] },
-        style,
-      ]}
+      style={[fabStyle, getPosition(), style]}
     >
       <Ionicons name={icon} size={sizeValues.iconSize} color={fabColors.icon} />
       {label && <Text style={[styles.label, { color: fabColors.icon }]}>{label}</Text>}
