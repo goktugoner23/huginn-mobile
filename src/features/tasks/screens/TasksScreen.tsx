@@ -304,7 +304,6 @@ const TasksScreen: React.FC = () => {
             key={group.id}
             group={group}
             tasks={items}
-            onMove={handleMoveTask}
             onEdit={handleEditTask}
           />
         ))}
@@ -312,7 +311,6 @@ const TasksScreen: React.FC = () => {
           <TaskBoard
             group={null}
             tasks={ungrouped}
-            onMove={handleMoveTask}
             onEdit={handleEditTask}
           />
         ) : null}
@@ -395,6 +393,7 @@ const TasksScreen: React.FC = () => {
         onConfirm={handleUpdateTask}
         onDelete={() => setActiveDialog('deleteTask')}
         onCreateGroup={handleAddGroup}
+        onMove={handleMoveTask}
       />
 
       <AddTaskGroupDialog

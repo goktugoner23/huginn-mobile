@@ -5,6 +5,17 @@ All notable changes to the Huginn React Native project are documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-10-17
+
+Mirrors the web app's card changes the same day.
+
+### Changed
+- **Board cards are one fixed size** — every card is 88dp whatever it holds. The title takes two lines on its own, or one when a description follows, and the meta strip (due date) always occupies the same row so cards never jitter against each other.
+- **The move chips are gone from cards.** They sat under the text and made every card a different height. A task now moves from the **Status** row added to the edit dialog — which on mobile is the only way, since there is no drag here.
+
+### Fixed
+- **YAML frontmatter leaked into card previews.** Descriptions were rendered raw, so a task written by Alfred or imported from the vault previewed as `--- name: … type: project ---` instead of its body. Mobile now runs the same `stripMarkdown` as the web app — the file is copied verbatim, frontmatter rule included.
+
 ## [0.2.0] - 2026-10-15
 
 Tasks board, matching the board added to the web app the same day.

@@ -3,7 +3,14 @@ import { View, StyleSheet, ScrollView, TouchableOpacity, Text } from 'react-nati
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Dialog, Input, Button, Chip } from '@shared/components/ui';
-import { Task, TaskGroup, TASK_GROUP_COLORS } from '@features/tasks/types/Task';
+import {
+  Task,
+  TaskGroup,
+  TaskStatus,
+  TASK_GROUP_COLORS,
+  TASK_STATUSES,
+  TASK_STATUS_LABELS,
+} from '@features/tasks/types/Task';
 import { useColors, spacing, textStyles, radius } from '@shared/theme';
 import { formatDate } from '@shared/utils/formatters';
 
@@ -15,6 +22,8 @@ interface EditTaskDialogProps {
   onConfirm: (taskData: { name: string; description?: string; dueDate?: Date; groupId?: string }) => void;
   onDelete: () => void;
   onCreateGroup?: (groupData: { title: string; description?: string; color: string }) => void;
+  /** Move the task to a board column. Omitted = hide the Status row. */
+  onMove?: (task: Task, status: TaskStatus) => void;
 }
 
 const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
@@ -25,6 +34,7 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
   onConfirm,
   onDelete,
   onCreateGroup,
+  onMove,
 }) => {
   const colors = useColors();
   const [name, setName] = useState('');
@@ -214,6 +224,42 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
               )}
             </View>
 
+            {/* Board column. The cards carry no move chips any more — they
+                overlapped the title — and mobile has no drag, so this is the
+                only way to move a task between columns. */}
+            {onMove && task ? (
+              <View style={styles.statusBlock}>
+                <Text style={[textStyles.label, { color: colors.foregroundMuted }]}>Status</Text>
+                <View style={styles.statusRow}>
+                  {TASK_STATUSES.map((s) => {
+                    const active = (task.status ?? (task.completed ? 'done' : 'todo')) === s;
+                    return (
+                      <TouchableOpacity
+                        key={s}
+                        onPress={() => {
+                          if (!active) onMove(task, s);
+                        }}
+                        style={[
+                          styles.statusChip,
+                          { borderColor: colors.border },
+                          active && { backgroundColor: colors.primary, borderColor: colors.primary },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            textStyles.caption,
+                            { color: active ? colors.primaryForeground : colors.foregroundMuted },
+                          ]}
+                        >
+                          {TASK_STATUS_LABELS[s]}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </View>
+            ) : null}
+
             <View style={styles.actions}>
               <Button variant="destructive" onPress={onDelete}>
                 Delete
@@ -291,6 +337,14 @@ const EditTaskDialog: React.FC<EditTaskDialogProps> = ({
 };
 
 const styles = StyleSheet.create({
+  statusBlock: { gap: spacing[2], marginTop: spacing[2] },
+  statusRow: { flexDirection: 'row', gap: spacing[2] },
+  statusChip: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: spacing[3],
+    paddingVertical: spacing[1],
+  },
   form: {
     gap: spacing[4],
   },

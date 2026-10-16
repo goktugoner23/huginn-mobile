@@ -17,6 +17,7 @@ import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { CalendarClock } from 'lucide-react-native';
 import { Text } from '@shared/components/ui';
 import { useColors, spacing, radius, textStyles } from '@shared/theme';
+import { stripMarkdown } from '@features/tasks/utils/markdown';
 import {
   TASK_STATUSES,
   TASK_STATUS_LABELS,
@@ -26,6 +27,7 @@ import {
 } from '@features/tasks/types/Task';
 
 const COLUMN_WIDTH = 280;
+const CARD_HEIGHT = 88;
 
 function isOverdue(task: Task): boolean {
   return Boolean(task.dueDate && task.status !== 'done' && new Date(task.dueDate) < new Date());
@@ -41,11 +43,10 @@ interface TaskBoardProps {
   /** The group this board belongs to; null is the "No group" board. */
   group: TaskGroup | null;
   tasks: Task[];
-  onMove: (task: Task, status: TaskStatus) => void;
   onEdit: (task: Task) => void;
 }
 
-export default function TaskBoard({ group, tasks, onMove, onEdit }: TaskBoardProps) {
+export default function TaskBoard({ group, tasks, onEdit }: TaskBoardProps) {
   const colors = useColors();
   const styles = useMemo(() => makeStyles(colors), [colors]);
 
@@ -63,41 +64,47 @@ export default function TaskBoard({ group, tasks, onMove, onEdit }: TaskBoardPro
 
   const renderCard = useCallback(
     (task: Task) => (
-      <View key={task.id} style={styles.card}>
-        <TouchableOpacity onPress={() => onEdit(task)} activeOpacity={0.7}>
-          <Text style={[styles.cardTitle, task.status === 'done' && styles.cardTitleDone]}>
+      <TouchableOpacity
+        key={task.id}
+        style={styles.card}
+        onPress={() => onEdit(task)}
+        activeOpacity={0.7}
+      >
+        <View style={styles.cardBodyArea}>
+          <Text
+            style={[styles.cardTitle, task.status === 'done' && styles.cardTitleDone]}
+            // Two lines on its own, one when a description follows, so every
+            // card is the same height whatever it holds.
+            numberOfLines={task.description ? 1 : 2}
+          >
             {task.name}
           </Text>
           {task.description ? (
-            <Text style={styles.cardBody} numberOfLines={2}>
-              {task.description}
+            <Text style={styles.cardDesc} numberOfLines={2}>
+              {stripMarkdown(task.description)}
             </Text>
           ) : null}
-        </TouchableOpacity>
-
-        {task.dueDate ? (
-          <View style={styles.dueRow}>
-            <CalendarClock
-              size={13}
-              color={isOverdue(task) ? colors.destructive : colors.foregroundMuted}
-            />
-            <Text style={[styles.due, isOverdue(task) && styles.dueOverdue]}>
-              {formatDue(task.dueDate)}
-              {isOverdue(task) ? ' · overdue' : ''}
-            </Text>
-          </View>
-        ) : null}
-
-        <View style={styles.moveRow}>
-          {TASK_STATUSES.filter((s) => s !== task.status).map((s) => (
-            <TouchableOpacity key={s} style={styles.moveChip} onPress={() => onMove(task, s)}>
-              <Text style={styles.moveChipText}>{TASK_STATUS_LABELS[s]}</Text>
-            </TouchableOpacity>
-          ))}
         </View>
-      </View>
+
+        {/* Always present so the meta strip sits on the same line on every
+            card, even when a task has no date. */}
+        <View style={styles.metaRow}>
+          {task.dueDate ? (
+            <>
+              <CalendarClock
+                size={13}
+                color={isOverdue(task) ? colors.destructive : colors.foregroundMuted}
+              />
+              <Text style={[styles.due, isOverdue(task) && styles.dueOverdue]}>
+                {formatDue(task.dueDate)}
+                {isOverdue(task) ? ' · overdue' : ''}
+              </Text>
+            </>
+          ) : null}
+        </View>
+      </TouchableOpacity>
     ),
-    [colors, styles, onEdit, onMove],
+    [colors, styles, onEdit],
   );
 
   return (
@@ -185,28 +192,22 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     columnLabel: { ...textStyles.caption, color: colors.foregroundMuted, letterSpacing: 1 },
     columnCount: { ...textStyles.caption, color: colors.foregroundMuted },
     card: {
+      // Fixed height so every card in every column matches, ClickUp-style.
+      height: CARD_HEIGHT,
       backgroundColor: colors.surface,
       borderRadius: radius.lg,
       borderWidth: StyleSheet.hairlineWidth,
       borderColor: colors.border,
       padding: spacing[3],
-      gap: spacing[2],
+      justifyContent: 'space-between',
     },
+    cardBodyArea: { flex: 1, minHeight: 0 },
+    metaRow: { height: 18, flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
     cardTitle: { ...textStyles.bodySmall, color: colors.foreground, fontWeight: '500' },
     cardTitleDone: { color: colors.foregroundMuted, textDecorationLine: 'line-through' },
-    cardBody: { ...textStyles.caption, color: colors.foregroundMuted, marginTop: 2 },
-    dueRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[1] },
+    cardDesc: { ...textStyles.caption, color: colors.foregroundMuted, marginTop: 2 },
     due: { ...textStyles.caption, color: colors.foregroundMuted },
     dueOverdue: { color: colors.destructive, fontWeight: '600' },
-    moveRow: { flexDirection: 'row', gap: spacing[1], flexWrap: 'wrap' },
-    moveChip: {
-      borderRadius: radius.full,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: colors.border,
-      paddingHorizontal: spacing[2],
-      paddingVertical: 4,
-    },
-    moveChipText: { ...textStyles.caption, color: colors.foreground },
     emptyColumn: {
       ...textStyles.caption,
       color: colors.foregroundSubtle,
