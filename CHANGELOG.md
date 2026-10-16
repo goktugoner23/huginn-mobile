@@ -5,6 +5,11 @@ All notable changes to the Huginn React Native project are documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2026-10-17
+
+### Fixed
+- **The location permission dialog came back on every launch.** `ensureAndroidPermissions` called `PermissionsAndroid.request` unconditionally, and `request` re-prompts for as long as a permission is denied; worse, passing it a `rationale` object makes React Native show its own dialog first whenever Android reports a rationale is due — which is every launch after one refusal. It now checks the real permission state first and asks at most once per permission, remembering that it asked. A granted phone sees nothing, and a "no" stays no until it is changed in Android settings, which `check()` picks up on the next launch. `resetLocationPermissionPrompt()` is exported so a future "Share my location" action in Manifest can ask again.
+
 ## [0.2.1] - 2026-10-17
 
 Mirrors the web app's card changes the same day.
