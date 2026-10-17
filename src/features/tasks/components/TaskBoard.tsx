@@ -12,7 +12,7 @@
  *   primary control, which beats a drag across a horizontal scroll view.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { CalendarClock } from 'lucide-react-native';
 import { Text } from '@shared/components/ui';
@@ -28,6 +28,9 @@ import {
 
 const COLUMN_WIDTH = 280;
 const CARD_HEIGHT = 88;
+// Cards a column shows before "Show more"; a long Done column otherwise made
+// the screen endless. Same count as the webapp board.
+const COLLAPSED_CARD_COUNT = 5;
 
 function isOverdue(task: Task): boolean {
   return Boolean(task.dueDate && task.status !== 'done' && new Date(task.dueDate) < new Date());
@@ -49,6 +52,16 @@ interface TaskBoardProps {
 export default function TaskBoard({ group, tasks, onEdit }: TaskBoardProps) {
   const colors = useColors();
   const styles = useMemo(() => makeStyles(colors), [colors]);
+  const [expandedColumns, setExpandedColumns] = useState<Set<TaskStatus>>(() => new Set());
+
+  const toggleColumn = useCallback((status: TaskStatus) => {
+    setExpandedColumns((current) => {
+      const next = new Set(current);
+      if (next.has(status)) next.delete(status);
+      else next.add(status);
+      return next;
+    });
+  }, []);
 
   const columns = useMemo(
     () =>
@@ -129,18 +142,36 @@ export default function TaskBoard({ group, tasks, onEdit }: TaskBoardProps) {
         snapToInterval={COLUMN_WIDTH + spacing[3]}
         decelerationRate="fast"
       >
-        {columns.map((column) => (
-          <View key={column.status} style={styles.column}>
-            <View style={styles.columnHead}>
-              <Text style={styles.columnLabel}>{column.label.toUpperCase()}</Text>
-              <Text style={styles.columnCount}>{column.items.length}</Text>
+        {columns.map((column) => {
+          const expanded = expandedColumns.has(column.status);
+          const hiddenCount = column.items.length - COLLAPSED_CARD_COUNT;
+          const visibleItems = expanded
+            ? column.items
+            : column.items.slice(0, COLLAPSED_CARD_COUNT);
+          return (
+            <View key={column.status} style={styles.column}>
+              <View style={styles.columnHead}>
+                <Text style={styles.columnLabel}>{column.label.toUpperCase()}</Text>
+                <Text style={styles.columnCount}>{column.items.length}</Text>
+              </View>
+              {visibleItems.map(renderCard)}
+              {hiddenCount > 0 ? (
+                <TouchableOpacity
+                  style={styles.showMore}
+                  onPress={() => toggleColumn(column.status)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.showMoreText}>
+                    {expanded ? 'Show less' : `Show ${hiddenCount} more`}
+                  </Text>
+                </TouchableOpacity>
+              ) : null}
+              {column.items.length === 0 ? (
+                <Text style={styles.emptyColumn}>Nothing here</Text>
+              ) : null}
             </View>
-            {column.items.map(renderCard)}
-            {column.items.length === 0 ? (
-              <Text style={styles.emptyColumn}>Nothing here</Text>
-            ) : null}
-          </View>
-        ))}
+          );
+        })}
       </ScrollView>
     </View>
   );
@@ -208,6 +239,12 @@ const makeStyles = (colors: ReturnType<typeof useColors>) =>
     cardDesc: { ...textStyles.caption, color: colors.foregroundMuted, marginTop: 2 },
     due: { ...textStyles.caption, color: colors.foregroundMuted },
     dueOverdue: { color: colors.destructive, fontWeight: '600' },
+    showMore: {
+      alignItems: 'center',
+      paddingVertical: spacing[2],
+      borderRadius: radius.full,
+    },
+    showMoreText: { ...textStyles.caption, color: colors.foregroundMuted, fontWeight: '600' },
     emptyColumn: {
       ...textStyles.caption,
       color: colors.foregroundSubtle,
