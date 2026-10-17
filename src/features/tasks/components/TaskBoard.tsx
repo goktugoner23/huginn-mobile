@@ -30,7 +30,7 @@ const COLUMN_WIDTH = 280;
 const CARD_HEIGHT = 88;
 // Cards a column shows before "Show more"; a long Done column otherwise made
 // the screen endless. Same count as the webapp board.
-const COLLAPSED_CARD_COUNT = 5;
+const COLLAPSED_CARD_COUNT = 3;
 
 function isOverdue(task: Task): boolean {
   return Boolean(task.dueDate && task.status !== 'done' && new Date(task.dueDate) < new Date());
